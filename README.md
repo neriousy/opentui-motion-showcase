@@ -25,8 +25,8 @@ For a live mouse take, open the pointer scene directly and move, hover, press, o
 bun src/slides.ts --scene=6 --manual
 ```
 
-The toast scene is also fully interactive. Click `SHOW TOAST` as quickly as you like, hover cards to pause their timers,
-or press an action/close target:
+The toast scene is also fully interactive. Click `SHOW TOAST` as quickly as you like, hover the collapsed deck to fan
+out its cards and pause every timer, or press an action/close target:
 
 ```bash
 bun src/slides.ts --scene=9 --manual

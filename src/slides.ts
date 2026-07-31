@@ -902,7 +902,7 @@ function createToastScene(): SceneInstance {
     content,
     "09 / INTERACTIVE FEEDBACK",
     "ONE HOST. TOAST FROM ANYWHERE.",
-    "Click repeatedly · hover pauses · actions are live.",
+    "Click repeatedly · hover fans out · actions are live.",
   )
   const panelWidth = sceneWidth(72, 48)
   const panel = new BoxRenderable(renderer, {
@@ -1042,6 +1042,22 @@ function createToastScene(): SceneInstance {
     )
   }
 
+  const dispatchToast = (type: "over" | "out"): boolean => {
+    if (lastToastId === undefined) return false
+    const item = toaster.getToast(lastToastId)
+    if (!item) return false
+    item.processMouseEvent(
+      new MouseEvent(item, {
+        type,
+        button: MouseButton.LEFT,
+        x: Math.round(item.screenX + 2),
+        y: Math.round(item.screenY + 1),
+        modifiers: { shift: false, alt: false, ctrl: false },
+      }),
+    )
+    return true
+  }
+
   return {
     root,
     async play(signal) {
@@ -1059,6 +1075,22 @@ function createToastScene(): SceneInstance {
         if (!(await wait(delay, signal))) return
       }
       dispatchTrigger("out")
+      status.content = "3 TOASTS · COLLAPSED INTO ONE DECK"
+      status.fg = COLORS.teal
+      caption.content = "Newest in front · older cards peek from behind"
+      caption.fg = COLORS.muted
+      if (!(await wait(700, signal))) return
+      if (dispatchToast("over")) {
+        status.content = "HOVER → FANNED OUT · ALL TIMERS PAUSED"
+        status.fg = COLORS.green
+        caption.content = "One pointer gesture reveals the whole stack"
+        caption.fg = COLORS.teal
+        if (!(await wait(1_350, signal))) return
+        dispatchToast("out")
+        status.content = "LEAVE → COLLAPSED DECK"
+        status.fg = COLORS.muted
+        if (!(await wait(650, signal))) return
+      }
       const publishing = notify.loading("Publishing v1.4.0", { description: "Packing the terminal artifact…" })
       status.content = "SAME ID · LOADING → SUCCESS"
       status.fg = COLORS.purple
@@ -1069,7 +1101,7 @@ function createToastScene(): SceneInstance {
       })
       if (!(await wait(1_100, signal))) return
       if (lastToastId !== undefined && store.has(lastToastId)) {
-        caption.content = "Real cards · real timers · real mouse hit targets"
+        caption.content = "Layered cards · shared timers · real mouse hit targets"
         caption.fg = COLORS.green
       }
     },
