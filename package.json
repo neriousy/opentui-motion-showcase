@@ -10,10 +10,15 @@
     "fmt": "oxfmt .",
     "fmt:check": "oxfmt --check .",
     "record": "bun src/slides.ts --recording",
-    "sync:motion": "bun scripts/sync-motion.ts"
+    "sync:motion": "bun scripts/sync-motion.ts",
+    "sync:packages": "bun scripts/sync-motion.ts"
   },
   "dependencies": {
     "@opentui/core": "0.4.5",
+    "opentui-motion": "file:.packages/opentui-motion-0.1.0.tgz",
+    "opentui-toast": "file:.packages/opentui-toast-0.1.0.tgz"
+  },
+  "overrides": {
     "opentui-motion": "file:.packages/opentui-motion-0.1.0.tgz"
   },
   "devDependencies": {

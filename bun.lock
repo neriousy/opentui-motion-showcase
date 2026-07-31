@@ -7,6 +7,7 @@
       "dependencies": {
         "@opentui/core": "0.4.5",
         "opentui-motion": "file:.packages/opentui-motion-0.1.0.tgz",
+        "opentui-toast": "file:.packages/opentui-toast-0.1.0.tgz",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -14,6 +15,9 @@
         "typescript": "^5.9.2",
       },
     },
+  },
+  "overrides": {
+    "opentui-motion": "file:.packages/opentui-motion-0.1.0.tgz",
   },
   "packages": {
     "@opentui/core": ["@opentui/core@0.4.5", "", { "dependencies": { "bun-ffi-structs": "0.2.4", "diff": "9.0.0", "marked": "17.0.1", "string-width": "7.2.0", "strip-ansi": "7.1.2" }, "optionalDependencies": { "@opentui/core-darwin-arm64": "0.4.5", "@opentui/core-darwin-x64": "0.4.5", "@opentui/core-linux-arm64": "0.4.5", "@opentui/core-linux-arm64-musl": "0.4.5", "@opentui/core-linux-x64": "0.4.5", "@opentui/core-linux-x64-musl": "0.4.5", "@opentui/core-win32-arm64": "0.4.5", "@opentui/core-win32-x64": "0.4.5" }, "peerDependencies": { "web-tree-sitter": "0.25.10" } }, "sha512-JsgRTPkA6e+Vxmumxai6SElOSlRQkbzNKHlCfemlArRiLhfC1IZ9RXJo2QH4xSu+uBOWAM90uss73/pPlkdEig=="],
@@ -91,6 +95,8 @@
     "marked": ["marked@17.0.1", "", { "bin": { "marked": "bin/marked.js" } }, "sha512-boeBdiS0ghpWcSwoNm/jJBwdpFaMnZWRzjA6SkUMYb40SVaN1x7mmfGKp0jvexGcx+7y2La5zRZsYFZI6Qpypg=="],
 
     "opentui-motion": ["opentui-motion@.packages/opentui-motion-0.1.0.tgz", { "peerDependencies": { "@opentui/core": ">=0.4.5", "@opentui/react": ">=0.4.5", "@opentui/solid": ">=0.4.5" }, "optionalPeers": ["@opentui/react", "@opentui/solid"] }, "sha512-8+g6qiiSlO0Iay84vO4jjFlHpMmUexcPkL90JXroTTt5sVAVH1FLbY+Uielabity7WJLqx4lWQUFfCnbhVpkxA=="],
+
+    "opentui-toast": ["opentui-toast@.packages/opentui-toast-0.1.0.tgz", { "peerDependencies": { "@opentui/core": ">=0.4.5", "@opentui/react": ">=0.4.5", "@opentui/solid": ">=0.4.5", "opentui-motion": ">=0.1.0" }, "optionalPeers": ["@opentui/react", "@opentui/solid"] }, "sha512-Utl4xmfg928Z2h9n5EOT1z5wVTPksXF2wBB5gt6bUWjPPpz1d4kR0T1h6jdQPJ84nAFqItBsBz21MqqNHzwcBA=="],
 
     "oxfmt": ["oxfmt@0.41.0", "", { "dependencies": { "tinypool": "2.1.0" }, "optionalDependencies": { "@oxfmt/binding-android-arm-eabi": "0.41.0", "@oxfmt/binding-android-arm64": "0.41.0", "@oxfmt/binding-darwin-arm64": "0.41.0", "@oxfmt/binding-darwin-x64": "0.41.0", "@oxfmt/binding-freebsd-x64": "0.41.0", "@oxfmt/binding-linux-arm-gnueabihf": "0.41.0", "@oxfmt/binding-linux-arm-musleabihf": "0.41.0", "@oxfmt/binding-linux-arm64-gnu": "0.41.0", "@oxfmt/binding-linux-arm64-musl": "0.41.0", "@oxfmt/binding-linux-ppc64-gnu": "0.41.0", "@oxfmt/binding-linux-riscv64-gnu": "0.41.0", "@oxfmt/binding-linux-riscv64-musl": "0.41.0", "@oxfmt/binding-linux-s390x-gnu": "0.41.0", "@oxfmt/binding-linux-x64-gnu": "0.41.0", "@oxfmt/binding-linux-x64-musl": "0.41.0", "@oxfmt/binding-openharmony-arm64": "0.41.0", "@oxfmt/binding-win32-arm64-msvc": "0.41.0", "@oxfmt/binding-win32-ia32-msvc": "0.41.0", "@oxfmt/binding-win32-x64-msvc": "0.41.0" }, "bin": { "oxfmt": "bin/oxfmt" } }, "sha512-sKLdJZdQ3bw6x9qKiT7+eID4MNEXlDHf5ZacfIircrq6Qwjk0L6t2/JQlZZrVHTXJawK3KaMuBoJnEJPcqCEdg=="],
 

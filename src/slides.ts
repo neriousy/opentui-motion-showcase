@@ -2,6 +2,7 @@ import {
   ASCIIFontRenderable,
   BoxRenderable,
   CliRenderEvents,
+  MouseButton,
   MouseEvent,
   TextAttributes,
   TextRenderable,
@@ -16,9 +17,11 @@ import {
   stagger,
   type MotionPlaybackControls,
 } from "opentui-motion"
+import { ToasterRenderable, ToastStore, createToast, type ToastId } from "opentui-toast"
 import { createCtaTabs } from "./cta-tabs"
 import { createHeroComposition } from "./hero"
 import { getResponsiveLayout } from "./responsive"
+import { animateSceneExit } from "./scene-transition"
 
 const COLORS = {
   background: "#07070a",
@@ -36,7 +39,7 @@ const COLORS = {
   red: "#f38ba8",
 } as const
 
-const SCENE_COUNT = 10
+const SCENE_COUNT = 11
 const args = process.argv.slice(2)
 const speed = boundedNumber(readOption("speed") ?? process.env.DEMO_SPEED, 1, 0.05, 4)
 const isRecording = args.includes("--recording")
@@ -118,6 +121,7 @@ const scenes: SceneDefinition[] = [
   { name: "mouse spring", durationMs: 8_500, create: createPointerScene },
   { name: "animated values", durationMs: 7_000, create: createCounterScene },
   { name: "micro-motion", durationMs: 8_000, create: createLoaderScene },
+  { name: "interactive toasts", durationMs: 11_500, create: createToastScene },
   { name: "install", durationMs: 10_800, create: createCallToActionScene },
 ]
 
@@ -886,10 +890,196 @@ function createLoaderScene(): SceneInstance {
   }
 }
 
+function createToastScene(): SceneInstance {
+  const root = new BoxRenderable(renderer, {
+    width: "100%",
+    height: "100%",
+    position: "relative",
+    backgroundColor: COLORS.background,
+  })
+  const content = createCenteredScene()
+  const caption = addSceneHeading(
+    content,
+    "09 / INTERACTIVE FEEDBACK",
+    "ONE HOST. TOAST FROM ANYWHERE.",
+    "Click repeatedly · hover pauses · actions are live.",
+  )
+  const panelWidth = sceneWidth(72, 48)
+  const panel = new BoxRenderable(renderer, {
+    width: panelWidth,
+    height: renderer.terminalHeight < 28 ? 10 : 12,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 1,
+    marginTop: 1,
+    paddingX: 2,
+    border: true,
+    borderStyle: "rounded",
+    borderColor: COLORS.grid,
+    backgroundColor: COLORS.panel,
+  })
+  const source = text('toast.success("Changes saved")', COLORS.teal, true)
+  const status = text("0 TOASTS EMITTED", COLORS.muted, true)
+  const controls = new BoxRenderable(renderer, {
+    width: Math.max(40, panelWidth - 6),
+    height: 3,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
+  })
+  const trigger = new MotionBoxRenderable(renderer, {
+    width: 21,
+    height: 3,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    border: true,
+    borderStyle: "rounded",
+    borderColor: COLORS.purple,
+    backgroundColor: COLORS.panelBright,
+    whileHover: { backgroundColor: COLORS.purple, borderColor: COLORS.pink },
+    whilePress: { opacity: 0.64, translateY: 1, backgroundColor: COLORS.pink },
+    transition: { type: "spring", stiffness: 280, damping: 22, mass: 0.65 },
+  })
+  trigger.add(text("SHOW TOAST", COLORS.text, true))
+  const clear = new MotionBoxRenderable(renderer, {
+    width: 16,
+    height: 3,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    border: true,
+    borderStyle: "rounded",
+    borderColor: COLORS.grid,
+    backgroundColor: COLORS.panel,
+    whileHover: { backgroundColor: COLORS.panelBright, borderColor: COLORS.muted },
+    whilePress: { opacity: 0.6 },
+    transition: { duration: ms(140), ease: "outQuad" },
+  })
+  clear.add(text("DISMISS ALL", COLORS.muted, true))
+  controls.add(trigger)
+  controls.add(clear)
+  panel.add(text("SONNER PRINCIPLES · RENDERER-NATIVE MOTION", COLORS.muted, true))
+  panel.add(source)
+  panel.add(controls)
+  panel.add(status)
+  content.add(panel)
+  root.add(content)
+
+  const store = new ToastStore({ maxToasts: 100 })
+  const notify = createToast(store)
+  const toaster = new ToasterRenderable(renderer, {
+    store,
+    placement: "bottom-right",
+    visibleToasts: 3,
+    duration: ms(4_600),
+    gap: 1,
+    offset: 2,
+    toastWidth: Math.max(28, Math.min(42, renderer.terminalWidth - 6)),
+  })
+  root.add(toaster)
+
+  let emitted = 0
+  let lastToastId: ToastId | undefined
+  const showToast = (): ToastId => {
+    emitted++
+    const variant = (emitted - 1) % 5
+    let id: ToastId
+    if (variant === 0) {
+      id = notify.success("Changes saved", {
+        description: "Your renderer state is up to date.",
+        action: {
+          label: "UNDO",
+          onClick: () => {
+            notify.info("Change reverted", {
+              id,
+              description: "The action updated this toast in place.",
+            })
+          },
+        },
+      })
+    } else if (variant === 1) {
+      id = notify.info("Preview is live", { description: "Mouse interaction is enabled." })
+    } else if (variant === 2) {
+      id = notify.warning("One review note", { description: "The stack stays bounded under spam." })
+    } else if (variant === 3) {
+      id = notify.error("Deploy needs attention", { description: "Click × or wait for auto-dismiss." })
+    } else {
+      id = notify("Event created", { description: "Friday, July 31 at 18:00" })
+    }
+    lastToastId = id
+    source.content = sourceForVariant(variant)
+    source.fg = [COLORS.green, COLORS.blue, COLORS.yellow, COLORS.red, COLORS.purple][variant]!
+    status.content = `${emitted} ${emitted === 1 ? "TOAST" : "TOASTS"} EMITTED · CLICK AGAIN`
+    status.fg = COLORS.teal
+    return id
+  }
+
+  trigger.onMouseDown = (event) => {
+    if (event.button !== MouseButton.LEFT) return
+    event.preventDefault()
+    showToast()
+  }
+  clear.onMouseDown = (event) => {
+    if (event.button !== MouseButton.LEFT) return
+    event.preventDefault()
+    notify.dismiss()
+    status.content = emitted === 0 ? "NOTHING TO DISMISS · TRY SHOW TOAST" : "DISMISSED · THE BUTTON IS STILL LIVE"
+    status.fg = COLORS.muted
+  }
+
+  const dispatchTrigger = (type: "over" | "down" | "up" | "out"): void => {
+    trigger.processMouseEvent(
+      new MouseEvent(trigger, {
+        type,
+        button: MouseButton.LEFT,
+        x: Math.round(trigger.screenX + trigger.width / 2),
+        y: Math.round(trigger.screenY + 1),
+        modifiers: { shift: false, alt: false, ctrl: false },
+      }),
+    )
+  }
+
+  return {
+    root,
+    async play(signal) {
+      if (isManual && !isRecording) {
+        caption.content = "Live mouse input · spam SHOW TOAST, then hover or click an action"
+        caption.fg = COLORS.teal
+        return
+      }
+      if (!(await wait(520, signal))) return
+      for (const delay of [620, 420, 260]) {
+        dispatchTrigger("over")
+        dispatchTrigger("down")
+        if (!(await wait(120, signal))) return
+        dispatchTrigger("up")
+        if (!(await wait(delay, signal))) return
+      }
+      dispatchTrigger("out")
+      const publishing = notify.loading("Publishing v1.4.0", { description: "Packing the terminal artifact…" })
+      status.content = "SAME ID · LOADING → SUCCESS"
+      status.fg = COLORS.purple
+      if (!(await wait(1_250, signal))) return
+      notify.success("v1.4.0 published", {
+        id: publishing,
+        description: "Promise-style state, updated in place.",
+      })
+      if (!(await wait(1_100, signal))) return
+      if (lastToastId !== undefined && store.has(lastToastId)) {
+        caption.content = "Real cards · real timers · real mouse hit targets"
+        caption.fg = COLORS.green
+      }
+    },
+  }
+}
+
 function createCallToActionScene(): SceneInstance {
   const root = createCenteredScene()
   const { compactBanner, compactCode } = getResponsiveLayout(renderer.terminalWidth)
-  const kicker = text("09 / USE IT YOUR WAY", COLORS.muted, true)
+  const kicker = text("10 / USE IT YOUR WAY", COLORS.muted, true)
   const heading = text("ONE ENGINE · FOUR WAYS IN", COLORS.text, true)
   const caption = text("Core, presets, React, or Solid.", COLORS.muted)
   root.add(kicker)
@@ -1081,6 +1271,16 @@ function createCallToActionScene(): SceneInstance {
   }
 }
 
+function sourceForVariant(index: number): string {
+  return [
+    'toast.success("Changes saved")',
+    'toast.info("Preview is live")',
+    'toast.warning("One review note")',
+    'toast.error("Deploy needs attention")',
+    'toast("Event created")',
+  ][index]!
+}
+
 function createLoaderCard(label: string, width: number): BoxRenderable {
   const card = new BoxRenderable(renderer, {
     width,
@@ -1238,10 +1438,7 @@ async function exitScene(instance: SceneInstance, signal: AbortSignal): Promise<
     await instance.exit(signal)
     return
   }
-  await runControls(
-    [animate(instance.root, { opacity: 0, translateY: -1 }, { duration: ms(420), ease: "inOutSine" })],
-    signal,
-  )
+  await runControls([animateSceneExit(instance.root, ms(420))], signal)
 }
 
 function mountScene(index: number): void {
