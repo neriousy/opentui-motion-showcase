@@ -1,13 +1,15 @@
 # opentui-motion showcase
 
-A standalone, recordable OpenTUI reel for `opentui-motion`. Twelve focused scenes play one by one: declarative entrance,
+A standalone, recordable OpenTUI reel for `opentui-motion`. Eleven focused scenes play one by one: declarative entrance,
 easing and spring motion, a physical stagger, color keyframes, manual enter/exit, mid-flight retargeting, animated
 mouse retargeting with hover/press, numbers, a lifecycle-safe spinner beside low-level loops, an interactive
-`opentui-toast` stack, the core/presets/framework entry points, and a short roadmap finale.
+`opentui-toast` stack, and the core/presets/framework entry-point finale.
 
-The project consumes only public package APIs. Until the packages are published, it installs packed archives produced
-from the sibling `../opentui-motion` and `../opentui-toast` checkouts. This faithfully exercises the npm artifacts and
-prevents a local symlink from loading a second copy of `@opentui/core`.
+The project consumes only public package APIs. For deterministic development and recordings, it installs committed
+package archives built from the sibling `../opentui-motion` and `../opentui-toast` checkouts. This exercises the same
+packed-artifact path used for releases and prevents a local symlink from loading a second copy of `@opentui/core`.
+
+Install the motion library in your own OpenTUI app with `bun add opentui-motion`.
 
 ## Run the showcase
 
