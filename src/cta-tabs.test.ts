@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, test } from "bun:test"
-import { BoxRenderable, parseColor } from "@opentui/core"
+import { BoxRenderable, TextRenderable, parseColor } from "@opentui/core"
 import { createTestRenderer, type TestRenderer } from "@opentui/core/testing"
-import { createCtaTabs } from "./cta-tabs"
+import { createCtaTabs, stageCtaPanelEntrance } from "./cta-tabs"
 
 const COLORS = {
   muted: "#777783",
@@ -17,6 +17,27 @@ afterEach(() => {
 })
 
 describe("CTA tabs", () => {
+  test("stages the initial CORE panel before its first paint", async () => {
+    const setup = await createTestRenderer({ width: 40, height: 6, useThread: false })
+    renderer = setup.renderer
+    const host = new BoxRenderable(renderer, { width: "100%", height: "100%" })
+    const panel = new BoxRenderable(renderer, { width: 30, height: 4 })
+    panel.add(new TextRenderable(renderer, { content: "CORE PANEL" }))
+    stageCtaPanelEntrance(panel)
+    host.add(panel)
+    renderer.root.add(host)
+
+    await setup.renderOnce()
+
+    expect(panel.opacity).toBe(0)
+    expect(panel.translateX).toBe(5)
+    const firstFrameText = setup
+      .captureSpans()
+      .lines.flatMap((line) => line.spans.map((span) => span.text))
+      .join("")
+    expect(firstFrameText).not.toContain("CORE PANEL")
+  })
+
   test("renders CORE selected on the first frame and updates later selections", async () => {
     const setup = await createTestRenderer({ width: 40, height: 4, useThread: false })
     renderer = setup.renderer

@@ -18,7 +18,7 @@ import {
   type MotionPlaybackControls,
 } from "opentui-motion"
 import { ToasterRenderable, ToastStore, createToast, type ToastId } from "opentui-toast"
-import { createCtaTabs } from "./cta-tabs"
+import { createCtaTabs, stageCtaPanelEntrance } from "./cta-tabs"
 import { createHeroComposition } from "./hero"
 import { getResponsiveLayout } from "./responsive"
 import { animateSceneExit } from "./scene-transition"
@@ -1216,6 +1216,7 @@ function createCallToActionScene(): SceneInstance {
     backgroundColor: COLORS.panel,
     padding: 1,
   })
+  stageCtaPanelEntrance(codePanel)
   const code = new TextRenderable(renderer, {
     content: snippets[0].source,
     fg: snippets[0].color,
@@ -1240,13 +1241,12 @@ function createCallToActionScene(): SceneInstance {
           ) {
             return
           }
+          const snippet = snippets[index]!
+          tabs.select(index)
+          code.content = snippet.source
+          code.fg = snippet.color
+          stageCtaPanelEntrance(codePanel)
         }
-        const snippet = snippets[index]!
-        tabs.select(index)
-        code.content = snippet.source
-        code.fg = snippet.color
-        codePanel.opacity = 0
-        codePanel.translateX = 5
         if (
           !(await runControls(
             [animate(codePanel, { opacity: 1, translateX: 0 }, { duration: ms(520), ease: "outBack" })],
