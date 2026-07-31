@@ -20,6 +20,7 @@ import {
 import { ToasterRenderable, ToastStore, createToast, type ToastId } from "opentui-toast"
 import { createCtaTabs, stageCtaPanelEntrance } from "./cta-tabs"
 import { createHeroComposition } from "./hero"
+import { createRoadmapComposition } from "./roadmap"
 import { getResponsiveLayout } from "./responsive"
 import { animateSceneExit } from "./scene-transition"
 
@@ -39,7 +40,7 @@ const COLORS = {
   red: "#f38ba8",
 } as const
 
-const SCENE_COUNT = 11
+const SCENE_COUNT = 12
 const args = process.argv.slice(2)
 const speed = boundedNumber(readOption("speed") ?? process.env.DEMO_SPEED, 1, 0.05, 4)
 const isRecording = args.includes("--recording")
@@ -123,6 +124,7 @@ const scenes: SceneDefinition[] = [
   { name: "micro-motion", durationMs: 8_000, create: createLoaderScene },
   { name: "interactive toasts", durationMs: 11_500, create: createToastScene },
   { name: "install", durationMs: 10_800, create: createCallToActionScene },
+  { name: "coming soon", durationMs: 6_200, create: createRoadmapScene },
 ]
 
 renderer.keyInput.on("keypress", handleKey)
@@ -1268,10 +1270,8 @@ function createCallToActionScene(): SceneInstance {
       }
       root.remove(codeArea)
       codeArea.destroyRecursively()
-      heading.content = "READY WHEN YOU ARE."
-      caption.content = compactBanner
-        ? "No DOM · no browser globals"
-        : "No DOM · no requestAnimationFrame · no browser globals"
+      heading.content = "FOLLOW THE BUILD."
+      caption.content = compactBanner ? "Source is live · npm soon" : "Source is live · first npm release coming soon"
       caption.fg = COLORS.purple
 
       const install = new BoxRenderable(renderer, {
@@ -1292,13 +1292,48 @@ function createCallToActionScene(): SceneInstance {
               backgroundColor: COLORS.background,
             }),
       )
-      install.add(text("bun add opentui-motion", COLORS.text, true))
-      install.add(text(callToActionUrl, COLORS.muted))
+      install.add(text(callToActionUrl, COLORS.text, true))
+      install.add(text("npm release coming soon", COLORS.muted))
       root.add(install)
       await runControls(
         [animate(install, { opacity: 1, translateY: 0 }, { duration: ms(720), ease: "outBack" })],
         signal,
       )
+    },
+  }
+}
+
+function createRoadmapScene(): SceneInstance {
+  const root = createCenteredScene()
+  const roadmap = createRoadmapComposition(renderer, {
+    terminalWidth: renderer.terminalWidth,
+    url: callToActionUrl,
+    palette: COLORS,
+  })
+  root.add(roadmap.root)
+
+  return {
+    root,
+    async play(signal) {
+      if (!(await wait(280, signal))) return
+      if (
+        !(await runControls(
+          [animate(roadmap.intro, { opacity: 1, translateY: 0 }, { duration: ms(520), ease: "outQuad" })],
+          signal,
+        ))
+      ) {
+        return
+      }
+
+      const entrances = roadmap.chips.map((chip, index) =>
+        animate(
+          chip,
+          { opacity: 1, translateY: 0, backgroundColor: COLORS.panelBright },
+          { duration: ms(580), delay: ms(stagger(index, { each: 90 })), ease: "outBack" },
+        ),
+      )
+      if (!(await runControls(entrances, signal))) return
+      await runControls([animate(roadmap.follow, { opacity: 1 }, { duration: ms(420), ease: "outQuad" })], signal)
     },
   }
 }

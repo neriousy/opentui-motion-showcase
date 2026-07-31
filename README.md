@@ -1,9 +1,9 @@
 # opentui-motion showcase
 
-A standalone, recordable OpenTUI reel for `opentui-motion`. Eleven focused scenes play one by one: declarative entrance,
+A standalone, recordable OpenTUI reel for `opentui-motion`. Twelve focused scenes play one by one: declarative entrance,
 easing and spring motion, a physical stagger, color keyframes, manual enter/exit, mid-flight retargeting, animated
 mouse retargeting with hover/press, numbers, a lifecycle-safe spinner beside low-level loops, an interactive
-`opentui-toast` stack, and the core/presets/framework install finale.
+`opentui-toast` stack, the core/presets/framework entry points, and a short roadmap finale.
 
 The project consumes only public package APIs. Until the packages are published, it installs packed archives produced
 from the sibling `../opentui-motion` and `../opentui-toast` checkouts. This faithfully exercises the npm artifacts and
@@ -41,7 +41,8 @@ bun run record
 ```
 
 Use a terminal around 110×34 cells for the intended composition. The reel uses only terminal cells, so it does not need
-Kitty graphics support. `DEMO_SPEED=0.5 bun run record` creates a faster rehearsal; keep the default speed for capture.
+Kitty graphics support. `DEMO_SPEED=0.5 bun run record` creates a faster rehearsal; use `DEMO_SPEED=0.8` for a tighter
+social cut or keep the default speed for the full take.
 
 The demo is silent so it can be screen-recorded and scored in post-production.
 
