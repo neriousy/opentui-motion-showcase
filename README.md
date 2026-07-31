@@ -9,7 +9,10 @@ The project consumes only public package APIs. For deterministic development and
 package archives built from the sibling `../opentui-motion` and `../opentui-toast` checkouts. This exercises the same
 packed-artifact path used for releases and prevents a local symlink from loading a second copy of `@opentui/core`.
 
-Install the motion library in your own OpenTUI app with `bun add opentui-motion`.
+Install either package in your own OpenTUI app:
+
+- `bun add opentui-motion` — [GitHub](https://github.com/neriousy/opentui-motion) · [npm](https://www.npmjs.com/package/opentui-motion)
+- `bun add opentui-toast` — [GitHub](https://github.com/neriousy/opentui-toast) · [npm](https://www.npmjs.com/package/opentui-toast)
 
 ## Run the showcase
 

@@ -46,7 +46,8 @@ const isRecording = args.includes("--recording")
 const isManual = args.includes("--manual")
 const shouldLoop = !isRecording && args.includes("--loop")
 const shouldExit = isRecording || args.includes("--exit")
-const callToActionUrl = process.env.DEMO_URL ?? "github.com/neriousy/opentui-motion"
+const motionCallToActionUrl = process.env.DEMO_URL ?? "github.com/neriousy/opentui-motion"
+const toastCallToActionUrl = process.env.DEMO_TOAST_URL ?? "github.com/neriousy/opentui-toast"
 const initialScene = Math.trunc(boundedNumber(readOption("scene"), 0, 0, SCENE_COUNT - 1))
 
 const renderer = await createCliRenderer({
@@ -900,7 +901,7 @@ function createToastScene(): SceneInstance {
   const content = createCenteredScene()
   const caption = addSceneHeading(
     content,
-    "09 / INTERACTIVE FEEDBACK",
+    "09 / OPENTUI-TOAST",
     "ONE HOST. TOAST FROM ANYWHERE.",
     "Click repeatedly · hover fans out · actions are live.",
   )
@@ -961,7 +962,7 @@ function createToastScene(): SceneInstance {
   clear.add(text("DISMISS ALL", COLORS.muted, true))
   controls.add(trigger)
   controls.add(clear)
-  panel.add(text("SONNER PRINCIPLES · RENDERER-NATIVE MOTION", COLORS.muted, true))
+  panel.add(text("OPENTUI-TOAST · POWERED BY OPENTUI-MOTION", COLORS.muted, true))
   panel.add(source)
   panel.add(controls)
   panel.add(status)
@@ -1269,7 +1270,7 @@ function createCallToActionScene(): SceneInstance {
       root.remove(codeArea)
       codeArea.destroyRecursively()
       heading.content = "START MOVING."
-      caption.content = compactBanner ? "Now available on npm" : "Open source · now available on npm"
+      caption.content = "Open source · motion and Sonner-style toasts on npm"
       caption.fg = COLORS.purple
 
       const install = new BoxRenderable(renderer, {
@@ -1291,7 +1292,9 @@ function createCallToActionScene(): SceneInstance {
             }),
       )
       install.add(text("bun add opentui-motion", COLORS.text, true))
-      install.add(text(callToActionUrl, COLORS.muted))
+      install.add(text(motionCallToActionUrl, COLORS.muted))
+      install.add(text("bun add opentui-toast", COLORS.text, true))
+      install.add(text(toastCallToActionUrl, COLORS.muted))
       root.add(install)
       await runControls(
         [animate(install, { opacity: 1, translateY: 0 }, { duration: ms(720), ease: "outBack" })],
