@@ -1,0 +1,27 @@
+{
+  "name": "opentui-motion-showcase",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A recordable terminal showcase for opentui-motion",
+  "type": "module",
+  "scripts": {
+    "check": "bunx tsc --noEmit",
+    "demo": "bun src/slides.ts",
+    "fmt": "oxfmt .",
+    "fmt:check": "oxfmt --check .",
+    "record": "bun src/slides.ts --recording",
+    "sync:motion": "bun scripts/sync-motion.ts"
+  },
+  "dependencies": {
+    "@opentui/core": "0.4.5",
+    "opentui-motion": "file:.packages/opentui-motion-0.1.0.tgz"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "oxfmt": "0.41.0",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "bun": ">=1.3.0"
+  }
+}

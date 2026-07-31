@@ -1,0 +1,45 @@
+# opentui-motion showcase
+
+A standalone, recordable OpenTUI reel for `opentui-motion`. Ten focused scenes play one by one: declarative entrance,
+easing and spring motion, a physical stagger, color keyframes, manual enter/exit, mid-flight retargeting, animated
+mouse retargeting with hover/press, numbers, a lifecycle-safe spinner beside low-level loops, and the
+core/presets/framework install finale.
+
+The project consumes only the package's public API. Until the package is published, it installs a packed archive produced
+from the sibling `../opentui-motion` checkout. This faithfully exercises the npm artifact and prevents a local symlink
+from loading a second copy of `@opentui/core`.
+
+## Run the showcase
+
+```bash
+bun install
+bun run demo
+```
+
+Controls: left/right or H/L changes scenes, Space pauses autoplay, R restarts the current scene, and Q quits. Open a
+specific scene with `bun src/slides.ts --scene=3 --manual`.
+
+For a live mouse take, open the pointer scene directly and move, hover, press, or drag inside its field:
+
+```bash
+bun src/slides.ts --scene=6 --manual
+```
+
+## Record a clean run
+
+Recording mode hides the navigation footer, plays every scene once, and exits after the final hold:
+
+```bash
+bun run record
+```
+
+Use a terminal around 110×34 cells for the intended composition. The reel uses only terminal cells, so it does not need
+Kitty graphics support. `DEMO_SPEED=0.5 bun run record` creates a faster rehearsal; keep the default speed for capture.
+
+The demo is silent so it can be screen-recorded and scored in post-production.
+
+After changing the package, rebuild and refresh the local archive with:
+
+```bash
+bun run sync:motion
+```

@@ -1,0 +1,9 @@
+node_modules/
+recordings/
+screenlog.*
+*.mp3
+*.m4a
+*.wav
+*.mov
+*.mp4
+.DS_Store
